@@ -195,7 +195,7 @@ if( WIN32 )
       SET(TCL_LIBRARY ${TCL_LIBS})
 
    elseif( MINGW )
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive -msse4.2 -Wa,-mbig-obj")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive -Wa,-mbig-obj")
       SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
       # Optimization flag apparently needed to get rid of "File too big" assembler errors when compiling in Debug mode
       # See: https://stackoverflow.com/questions/14125007/gcc-string-table-overflow-error-during-compilation/14601779#29479701
@@ -258,8 +258,8 @@ if(ENABLE_COVERAGE_TESTING)
 endif()
 
 # fc/src/compress/miniz.c breaks strict aliasing. The Linux kernel builds with no strict aliasing
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing -Werror -DBOOST_THREAD_DONT_PROVIDE_PROMISE_LAZY" )
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -Werror -DBOOST_THREAD_DONT_PROVIDE_PROMISE_LAZY" )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing -DBOOST_THREAD_DONT_PROVIDE_PROMISE_LAZY" )
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -DBOOST_THREAD_DONT_PROVIDE_PROMISE_LAZY" )
 
 # external_plugins needs to be compiled first because libraries/app depends on STEEM_EXTERNAL_PLUGINS being fully populated
 add_subdirectory( external_plugins )
