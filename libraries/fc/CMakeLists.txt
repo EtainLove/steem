@@ -219,7 +219,6 @@ set( fc_sources
      src/crypto/sha512.cpp
      src/crypto/blowfish.cpp
      src/crypto/elliptic_common.cpp
-     src/crypto/equihash.cpp
      src/crypto/restartable_sha256.cpp
      ${ECC_REST}
      src/crypto/elliptic_${ECC_IMPL}.cpp
@@ -253,7 +252,6 @@ list(APPEND sources "${CMAKE_CURRENT_BINARY_DIR}/git_revision.cpp")
 list(APPEND sources ${fc_headers})
 
 add_subdirectory( vendor/websocketpp )
-add_subdirectory( vendor/equihash )
 
 setup_library( fc SOURCES ${sources} LIBRARY_TYPE STATIC DONT_INSTALL_LIBRARY )
 
@@ -367,7 +365,6 @@ target_include_directories(fc
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/cyoencode-1.0.2/src
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/secp256k1-zkp
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/equihash
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/bitcoin/src
   )
 
@@ -375,7 +372,7 @@ target_include_directories(fc
 IF(NOT WIN32)
   set(LINK_USR_LOCAL_LIB -L/usr/local/lib)
 ENDIF()
-target_link_libraries( fc PUBLIC ${LINK_USR_LOCAL_LIB} equihash ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} ${Boost_LIBRARIES} ${PLATFORM_SPECIFIC_LIBS} ${RPCRT4} ${CMAKE_DL_LIBS} ${rt_library} ${readline_libraries} ${ECC_LIB} )
+target_link_libraries( fc PUBLIC ${LINK_USR_LOCAL_LIB} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} ${Boost_LIBRARIES} ${PLATFORM_SPECIFIC_LIBS} ${RPCRT4} ${CMAKE_DL_LIBS} ${rt_library} ${readline_libraries} ${ECC_LIB} )
 
 if(MSVC)
   set_source_files_properties( src/network/http/websocket.cpp PROPERTIES COMPILE_FLAGS "/bigobj" )
@@ -391,7 +388,6 @@ ENDIF(MSVC)
 ENDIF()
 
 include_directories( vendor/websocketpp )
-include_directories( vendor/equihash )
 
 add_subdirectory(tests)
 
