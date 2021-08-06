@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  steem-arm64:
+    build:
+      context: .
+      dockerfile: Dockerfile.arm64
+    volumes:
+      - .:/workspace/steem
