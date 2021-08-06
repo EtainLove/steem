@@ -573,14 +573,6 @@ struct get_worker_name_visitor
    {   return work.input.worker_account;    }
 };
 
-account_name_type get_worker_name( const pow2_work& work )
-{
-   // Even though in both cases the result is work.input.worker_account,
-   // we have to use a visitor because pow2_work is a static_variant
-   get_worker_name_visitor vtor;
-   return work.visit( vtor );
-}
-
 //
 // This visitor performs the following functions:
 //
@@ -759,18 +751,6 @@ struct pre_apply_operation_visitor
       regenerate( STEEM_NULL_ACCOUNT );
    }
 
-   void operator()( const pow_operation& op )const
-   {
-      regenerate< true >( op.worker_account );
-      regenerate< false >( _current_witness );
-   }
-
-   void operator()( const pow2_operation& op )const
-   {
-      regenerate< true >( get_worker_name( op.work ) );
-      regenerate< false >( _current_witness );
-   }
-
    void operator()( const create_proposal_operation& op )const
    {
       regenerate( op.creator );
@@ -837,21 +817,7 @@ struct post_apply_operation_visitor
       create_rc_account( _db, _current_time, op.new_account_name, _db.get_witness_schedule_object().median_props.account_creation_fee );
    }
 
-   void operator()( const pow_operation& op )const
-   {
-      // ilog( "handling post-apply pow_operation" );
-      create_rc_account< true >( _db, _current_time, op.worker_account, asset( 0, STEEM_SYMBOL ) );
-      _mod_accounts.emplace_back( op.worker_account );
-      _mod_accounts.emplace_back( _current_witness );
-   }
 
-   void operator()( const pow2_operation& op )const
-   {
-      auto worker_name = get_worker_name( op.work );
-      create_rc_account< true >( _db, _current_time, worker_name, asset( 0, STEEM_SYMBOL ) );
-      _mod_accounts.emplace_back( worker_name );
-      _mod_accounts.emplace_back( _current_witness );
-   }
 
    void operator()( const transfer_to_vesting_operation& op )
    {

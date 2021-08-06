@@ -36,11 +36,6 @@ namespace steem { namespace plugins { namespace condenser_api {
 
    typedef vector< legacy_comment_options_extensions > legacy_comment_options_extensions_type;
 
-   typedef static_variant<
-            protocol::pow2,
-            protocol::equihash_pow
-         > legacy_pow2_work;
-
    using namespace steem::protocol;
 
    typedef account_update_operation               legacy_account_update_operation;
@@ -59,7 +54,6 @@ namespace steem { namespace plugins { namespace condenser_api {
    typedef custom_json_operation                  legacy_custom_json_operation;
    typedef custom_binary_operation                legacy_custom_binary_operation;
    typedef limit_order_cancel_operation           legacy_limit_order_cancel_operation;
-   typedef pow_operation                          legacy_pow_operation;
    typedef report_over_production_operation       legacy_report_over_production_operation;
    typedef request_account_recovery_operation     legacy_request_account_recovery_operation;
    typedef recover_account_operation              legacy_recover_account_operation;
@@ -354,34 +348,7 @@ namespace steem { namespace plugins { namespace condenser_api {
       legacy_asset      steem_amount;
    };
 
-   struct legacy_pow2_operation
-   {
-      legacy_pow2_operation() {}
-      legacy_pow2_operation( const pow2_operation& op ) :
-         new_owner_key( op.new_owner_key )
-      {
-         op.work.visit( convert_to_legacy_static_variant< legacy_pow2_work >( work ) );
-         props.account_creation_fee = legacy_asset::from_asset( op.props.account_creation_fee.to_asset< false >() );
-         props.maximum_block_size = op.props.maximum_block_size;
-         props.sbd_interest_rate = op.props.sbd_interest_rate;
-      }
-
-      operator pow2_operation()const
-      {
-         pow2_operation op;
-         work.visit( convert_to_legacy_static_variant< pow2_work >( op.work ) );
-         op.new_owner_key = new_owner_key;
-         op.props.account_creation_fee = legacy_steem_asset::from_asset( asset( props.account_creation_fee ) );
-         op.props.maximum_block_size = props.maximum_block_size;
-         op.props.sbd_interest_rate = props.sbd_interest_rate;
-         return op;
-      }
-
-      legacy_pow2_work              work;
-      optional< public_key_type >   new_owner_key;
-      api_chain_properties          props;
-   };
-
+  
    struct legacy_transfer_to_vesting_operation
    {
       legacy_transfer_to_vesting_operation() {}
@@ -1119,7 +1086,6 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_witness_update_operation,
             legacy_account_witness_vote_operation,
             legacy_account_witness_proxy_operation,
-            legacy_pow_operation,
             legacy_custom_operation,
             legacy_report_over_production_operation,
             legacy_delete_comment_operation,
@@ -1135,7 +1101,6 @@ namespace steem { namespace plugins { namespace condenser_api {
             legacy_escrow_transfer_operation,
             legacy_escrow_dispute_operation,
             legacy_escrow_release_operation,
-            legacy_pow2_operation,
             legacy_escrow_approve_operation,
             legacy_transfer_to_savings_operation,
             legacy_transfer_from_savings_operation,
@@ -1197,7 +1162,6 @@ namespace steem { namespace plugins { namespace condenser_api {
       bool operator()( const custom_json_operation& op )const                    { l_op = op; return true; }
       bool operator()( const custom_binary_operation& op )const                  { l_op = op; return true; }
       bool operator()( const limit_order_cancel_operation& op )const             { l_op = op; return true; }
-      bool operator()( const pow_operation& op )const                            { l_op = op; return true; }
       bool operator()( const report_over_production_operation& op )const         { l_op = op; return true; }
       bool operator()( const request_account_recovery_operation& op )const       { l_op = op; return true; }
       bool operator()( const recover_account_operation& op )const                { l_op = op; return true; }
@@ -1282,12 +1246,6 @@ namespace steem { namespace plugins { namespace condenser_api {
       bool operator()( const escrow_release_operation& op )const
       {
          l_op = legacy_escrow_release_operation( op );
-         return true;
-      }
-
-      bool operator()( const pow2_operation& op )const
-      {
-         l_op = legacy_pow2_operation( op );
          return true;
       }
 
@@ -1494,11 +1452,6 @@ struct convert_from_legacy_operation_visitor
       return operation( escrow_release_operation( op ) );
    }
 
-   operation operator()( const legacy_pow2_operation& op )const
-   {
-      return operation( pow2_operation( op ) );
-   }
-
    operation operator()( const legacy_transfer_to_savings_operation& op )const
    {
       return operation( transfer_to_savings_operation( op ) );
@@ -1626,8 +1579,6 @@ void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_ope
 void to_variant( const steem::plugins::condenser_api::legacy_comment_options_extensions&, fc::variant& );
 void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_comment_options_extensions& );
 
-void to_variant( const steem::plugins::condenser_api::legacy_pow2_work&, fc::variant& );
-void from_variant( const fc::variant&, steem::plugins::condenser_api::legacy_pow2_work& );
 
 struct from_old_static_variant
 {
@@ -1715,7 +1666,6 @@ FC_REFLECT( steem::plugins::condenser_api::legacy_limit_order_create2_operation,
 FC_REFLECT( steem::plugins::condenser_api::legacy_comment_options_operation, (author)(permlink)(max_accepted_payout)(percent_steem_dollars)(allow_votes)(allow_curation_rewards)(extensions) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_escrow_transfer_operation, (from)(to)(sbd_amount)(steem_amount)(escrow_id)(agent)(fee)(json_meta)(ratification_deadline)(escrow_expiration) );
 FC_REFLECT( steem::plugins::condenser_api::legacy_escrow_release_operation, (from)(to)(agent)(who)(receiver)(escrow_id)(sbd_amount)(steem_amount) );
-FC_REFLECT( steem::plugins::condenser_api::legacy_pow2_operation, (work)(new_owner_key)(props) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_claim_reward_balance_operation, (account)(reward_steem)(reward_sbd)(reward_vests) )
 FC_REFLECT( steem::plugins::condenser_api::legacy_delegate_vesting_shares_operation, (delegator)(delegatee)(vesting_shares) );
 FC_REFLECT( steem::plugins::condenser_api::legacy_author_reward_operation, (author)(permlink)(sbd_payout)(steem_payout)(vesting_payout) )

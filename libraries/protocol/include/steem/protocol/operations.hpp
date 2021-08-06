@@ -34,7 +34,6 @@ namespace steem { namespace protocol {
             account_witness_vote_operation,
             account_witness_proxy_operation,
 
-            pow_operation,
 
             custom_operation,
 
@@ -53,7 +52,6 @@ namespace steem { namespace protocol {
             escrow_transfer_operation,
             escrow_dispute_operation,
             escrow_release_operation,
-            pow2_operation,
             escrow_approve_operation,
             transfer_to_savings_operation,
             transfer_from_savings_operation,
