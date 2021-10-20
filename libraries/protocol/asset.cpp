@@ -255,7 +255,7 @@ void asset_symbol_type::validate()const
 
 void asset::validate()const
 {
-   symbol.validate();
+//   symbol.validate();
    FC_ASSERT( amount.value >= 0 );
    FC_ASSERT( amount.value <= STEEM_MAX_SATOSHIS );
 }
